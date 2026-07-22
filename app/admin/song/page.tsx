@@ -1,20 +1,9 @@
-import SongTable from "@/app/components/SongTable";
-import { SongWithRelations } from "@/app/type/song";
-import { createClient } from "@/app/utils/supabase/server";
+import { getSongs } from '@/app/actions/songs'
+import SongsPageClient from '@/app/components/SongsPageClient'
 
-export default async function SongPage() {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('songs')
-    .select(`*, album(*), artist(*)`)
-  
-  const songs = (data as SongWithRelations[]) ?? []
+export default async function Page() {
+  const result = await getSongs()
+  const songs = result.success ? result.songs : []
 
-  return (
-    <div className='flex'>
-      <div className="text-lg font-medium text-center text-body border-b border-default">
-        <SongTable songs={songs} />
-      </div>
-    </div>
-  )
+  return <SongsPageClient initialSongs={songs} />
 }
