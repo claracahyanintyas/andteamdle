@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, FormEvent } from 'react'
+import { useState, FormEvent, useEffect } from 'react'
 import type { Artist } from '@/app/type/artist'
-import { createArtist, updateArtist } from '@/app/actions/artists'
+import { createArtist, updateArtist, getArtists } from '@/app/actions/artists'
 import { createClient } from '@/app/utils/supabase/client'
 
 interface ArtistFormProps {
@@ -12,10 +12,28 @@ interface ArtistFormProps {
 
 export default function ArtistForm({ artist, onSuccess }: ArtistFormProps) {
   const [name, setName] = useState(artist?.name ?? '')
-  const [type, setType] = useState(artist?.type ?? '')
+  const [groupId, setGroupId] = useState<number | ''>(artist?.group_id ?? '')
   const [pictureFile, setPictureFile] = useState<File | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const [artists, setArtists] = useState<Artist[]>([])
+  const [isLoadingOptions, setIsLoadingOptions] = useState(true)
+
+  useEffect(() => {
+    async function loadOptions() {
+      const [artistsResult] = await Promise.all([getArtists()])
+      if (artistsResult.success) setArtists(artistsResult.artists)
+      setIsLoadingOptions(false)
+    }
+    loadOptions()
+  }, [])
+
+  // keep form in sync if the same instance is reused for a different artist (e.g. edit modal swap)
+  useEffect(() => {
+    setName(artist?.name ?? '')
+    setGroupId(artist?.group_id ?? '')
+  }, [artist])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -46,8 +64,8 @@ export default function ArtistForm({ artist, onSuccess }: ArtistFormProps) {
     }
 
     const result = artist
-      ? await updateArtist(artist.id, { name, type, picture_url: pictureUrl })
-      : await createArtist({ name, type, picture_url: pictureUrl })
+      ? await updateArtist(artist.id, { name, group_id: groupId || null, picture_url: pictureUrl })
+      : await createArtist({ name, group_id: groupId || null, picture_url: pictureUrl })
 
     setIsSubmitting(false)
 
@@ -57,6 +75,10 @@ export default function ArtistForm({ artist, onSuccess }: ArtistFormProps) {
     }
 
     onSuccess?.()
+  }
+
+  if (isLoadingOptions) {
+    return <div className="bg-secondary text-center rounded-lg p-4">Loading...</div>
   }
 
   return (
@@ -72,16 +94,6 @@ export default function ArtistForm({ artist, onSuccess }: ArtistFormProps) {
           required
         />
 
-        <label htmlFor="type">Type</label>
-        <input
-          type="text"
-          id="type"
-          value={type}
-          className="bg-accent rounded-sm text-primary p-1"
-          onChange={(e) => setType(e.target.value)}
-          required
-        />
-
         <label htmlFor="picture">Picture</label>
         <input
           type="file"
@@ -90,6 +102,23 @@ export default function ArtistForm({ artist, onSuccess }: ArtistFormProps) {
           className="bg-accent rounded-sm text-primary p-1"
           onChange={(e) => setPictureFile(e.target.files?.[0] ?? null)}
         />
+
+        <label htmlFor="group">Group</label>
+        <select
+          id="group"
+          value={groupId}
+          className="bg-accent rounded-sm text-primary p-1"
+          onChange={(e) => setGroupId(e.target.value ? Number(e.target.value) : '')}
+        >
+          <option value="">Select a group</option>
+          {artists
+            .filter((a) => !artist || a.id !== artist.id) // don't let an artist be its own group
+            .map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.name}
+              </option>
+            ))}
+        </select>
 
         {error && <p className="text-red-600">{error}</p>}
 

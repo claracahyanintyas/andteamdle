@@ -15,5 +15,5 @@ export type Song = {
 export type SongWithRelations = Song & {
     artist: Artist
     album: Album
-    starter: Artist
+    starter: Artist | null
 }

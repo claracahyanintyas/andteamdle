@@ -53,6 +53,7 @@ export default function AlbumForm({ album, onSuccess }: AlbumFormProps) {
 
     if (!result.success) {
       setError(result.error ?? 'Something went wrong')
+      console.log(error)
       return
     }
 

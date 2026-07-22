@@ -18,22 +18,22 @@ export default function AlbumsPageClient({ initialAlbums }: AlbumsPageClientProp
 
   return (
     <div className="w-screen text-center mx-auto">
-      <table className='mx-auto'>
+      <table className='mx-auto border-collapse'>
         <thead>
-          <tr className='flex space-x-2'>
-            <th>Title</th>
-            <th>Release Date</th>
-            <th>album cover</th>
-            <th>edit</th>
-            <th>delete</th>
+          <tr className=''>
+            <th className="px-3 py-2">Title</th>
+            <th className="px-3 py-2">Release Date</th>
+            <th className="px-3 py-2">album cover</th>
+            <th className="px-3 py-2">edit</th>
+            <th className="px-3 py-2">delete</th>
           </tr>
         </thead>
         <tbody>
           {albums.map((album) => (
-            <tr key={album.id}>
-              <td>{album.title}</td>
-              <td>{album.release_date}</td>
-              <td>
+            <tr key={album.id}  className="border-t">
+              <td className="px-3 py-2">{album.title}</td>
+              <td className="px-3 py-2">{album.release_date}</td>
+              <td className="px-3 py-2">
                 {album.cover_url && (
                   <img src={album.cover_url} alt={album.title} width={50} />
                 )}

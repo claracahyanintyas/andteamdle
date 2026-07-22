@@ -2,47 +2,98 @@
 
 import ArtistForm from '@/app/components/ArtistForm'
 import { useState } from 'react'
-import type { Artist } from '@/app/type/artist'
+import type { ArtistWithGroup, Artist } from '@/app/type/artist'
+import { getArtists, deleteArtist } from '@/app/actions/artists'
 
 interface ArtistsPageClientProps {
-  initialArtists: Artist[]
+  initialArtists: ArtistWithGroup[]
 }
 
 export default function ArtistsPageClient({ initialArtists }: ArtistsPageClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [artists, setArtists] = useState<Artist[]>(initialArtists)
+  const [artists, setArtists] = useState<ArtistWithGroup[]>(initialArtists)
+  const [editingArtist, setEditingArtist] = useState<Artist | undefined>(undefined)
+  const [deletingId, setDeletingId] = useState<number | null>(null)
 
-  const openModal = () => setIsModalOpen(true)
-  const closeModal = () => setIsModalOpen(false)
+  const openAddModal = () => {
+    setEditingArtist(undefined)
+    setIsModalOpen(true)
+  }
+
+  const openEditModal = (artist: Artist) => {
+    setEditingArtist(artist)
+    setIsModalOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    setEditingArtist(undefined)
+  }
+
+  const refreshArtists = async () => {
+    const result = await getArtists()
+    if (result.success) setArtists(result.artists)
+    console.log(result.artists)
+  }
+
+  const handleFormSuccess = async () => {
+    await refreshArtists()
+    closeModal()
+  }
+
+  const handleDelete = async (id: number) => {
+    if (!confirm('Delete this artist?')) return
+    setDeletingId(id)
+    const result = await deleteArtist(id)
+    setDeletingId(null)
+
+    if (!result.success) {
+      alert(result.error ?? 'Failed to delete artist')
+      return
+    }
+
+    setArtists((prev) => prev.filter((a) => a.id !== id))
+  }
 
   return (
     <div className="w-screen text-center mx-auto">
-      <table className="mx-auto">
+      <table className="mx-auto border-collapse">
         <thead>
-          <tr className="flex space-x-2">
-            <th>Name</th>
-            <th>Type</th>
-            <th>Picture</th>
-            <th>edit</th>
-            <th>delete</th>
+          <tr className="">
+            <th className="px-3 py-2">Name</th>
+            <th className="px-3 py-2">Group</th>
+            <th className="px-3 py-2">Picture</th>
+            <th className="px-3 py-2">edit</th>
+            <th className="px-3 py-2">delete</th>
           </tr>
         </thead>
         <tbody>
           {artists.map((artist) => (
-            <tr key={artist.id}>
-              <td>{artist.name}</td>
-              <td>{artist.type}</td>
-              <td>
+            <tr key={artist.id} className="border-t">
+              <td className="px-3 py-2">{artist.name}</td>
+              <td className="px-3 py-2">{artist.group?.name}</td>
+              <td className="px-3 py-2">
                 {artist.picture_url && (
-                  <img src={artist.picture_url} alt={artist.name} width={50} />
+                  <img src={artist.picture_url} alt={artist.group?.name} width={50} />
                 )}
+              </td>
+              <td className="px-3 py-2">
+                <button onClick={() => openEditModal(artist)}>Edit</button>
+              </td>
+              <td className="px-3 py-2">
+                <button
+                  onClick={() => handleDelete(artist.id)}
+                  disabled={deletingId === artist.id}
+                >
+                  {deletingId === artist.id ? 'Deleting...' : 'Delete'}
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      <button id="artist-form-modal-open" className="mx-auto" onClick={openModal}>
+      <button id="artist-form-modal-open" className="mx-auto" onClick={openAddModal}>
         Add artist
       </button>
 
@@ -53,7 +104,7 @@ export default function ArtistsPageClient({ initialArtists }: ArtistsPageClientP
           </button>
           <div onClick={(e) => e.stopPropagation()}>
             <div className="mx-auto w-1/2">
-              <ArtistForm onSuccess={closeModal} />
+              <ArtistForm artist={editingArtist} onSuccess={handleFormSuccess} />
             </div>
           </div>
         </div>

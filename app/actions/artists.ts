@@ -1,15 +1,16 @@
-// app/actions/artists.ts
 'use server'
 
 import { createClient } from '@/app/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { Artist } from '@/app/type/artist'
+import type { Artist, ArtistWithGroup } from '@/app/type/artist'
 
 type ArtistInput = {
   name: string
-  type: string
+  group_id: number | null
   picture_url: string | null
 }
+
+const SELECT_WITH_GROUP = '*, group:group_id(*)'
 
 // ---------- CREATE ----------
 export async function createArtist(input: ArtistInput) {
@@ -19,16 +20,16 @@ export async function createArtist(input: ArtistInput) {
     .from('artists')
     .insert({
       name: input.name,
-      type: input.type,
+      group_id: input.group_id,
       picture_url: input.picture_url ?? null,
     })
-    .select()
+    .select(SELECT_WITH_GROUP)
     .single()
 
   if (error) return { success: false, error: error.message }
 
   revalidatePath('/')
-  return { success: true, artist: data as Artist }
+  return { success: true, artist: data as ArtistWithGroup }
 }
 
 // ---------- READ (list) ----------
@@ -37,12 +38,12 @@ export async function getArtists() {
 
   const { data, error } = await supabase
     .from('artists')
-    .select('*')
+    .select(SELECT_WITH_GROUP)
     .order('name', { ascending: true })
 
-  if (error) return { success: false, error: error.message, artists: [] as Artist[] }
+  if (error) return { success: false, error: error.message, artists: [] as ArtistWithGroup[] }
 
-  return { success: true, artists: data as Artist[] }
+  return { success: true, artists: data as ArtistWithGroup[] }
 }
 
 // ---------- READ (single) ----------
@@ -51,13 +52,13 @@ export async function getArtist(id: number) {
 
   const { data, error } = await supabase
     .from('artists')
-    .select('*')
+    .select(SELECT_WITH_GROUP)
     .eq('id', id)
     .single()
 
   if (error) return { success: false, error: error.message, artist: null }
 
-  return { success: true, artist: data as Artist }
+  return { success: true, artist: data as ArtistWithGroup }
 }
 
 // ---------- UPDATE ----------
@@ -68,13 +69,13 @@ export async function updateArtist(id: number, input: Partial<ArtistInput>) {
     .from('artists')
     .update(input)
     .eq('id', id)
-    .select()
+    .select(SELECT_WITH_GROUP)
     .single()
 
   if (error) return { success: false, error: error.message }
 
   revalidatePath('/')
-  return { success: true, artist: data as Artist }
+  return { success: true, artist: data as ArtistWithGroup }
 }
 
 // ---------- DELETE ----------
