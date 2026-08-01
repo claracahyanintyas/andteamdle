@@ -1,18 +1,9 @@
-export default function SongPage() {
-  return (
-    <div className='flex'>
-        <div className="text-lg font-medium text-center text-body border-b border-default ">
-            <ul className="flex flex-wrap">
-                <li className="me-2">
-                    <a href="#" className="inline-block p-4 hover:text-[#75C9C8] hover:border-b-2">Create</a>
-                </li>
-                <li className="me-2">
-                    <a href="#" className="inline-block p-4 hover:text-[#75C9C8] hover:border-b-2">View List</a>
-                </li>
-            </ul>
-        </div>
+import { getSongs } from '@/app/actions/songs'
+import SongsPageClient from '@/app/components/SongsPageClient'
 
-    </div>
-  )
+export default async function Page() {
+  const result = await getSongs()
+  const songs = result.success ? result.songs : []
+
+  return <SongsPageClient initialSongs={songs} />
 }
-
