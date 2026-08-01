@@ -27,7 +27,7 @@ export default function SongTable({songs} : {songs : SongWithRelations[]}) {
                         <td>{song.album.title}</td>
                         <td>{song.has_mv}</td>
                         <td>{song.release_date}</td>
-                        <td>{song.starter.name}</td>
+                        <td>{song.starter?.name}</td>
                         <td>{song.artist.name}</td>
                     </tr>
                 ))}
