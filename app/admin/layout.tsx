@@ -1,16 +1,17 @@
-import Link from "next/link";
-import AdminNavbar from "../components/AdminNavbar";
+import { redirect } from 'next/navigation'
+import { getCurrentProfile } from '@/app/actions/auth'
+import AdminNavbar from '../components/AdminNavbar'
 
-function Page({
+export default async function AdminLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
-  return (
-    <div className='flex'>
-        <AdminNavbar></AdminNavbar>
-        <div>{children}</div>
-    </div>
-  );
+}: {
+  children: React.ReactNode
+}) {
+  const { profile } = await getCurrentProfile()
+
+  if (!profile || profile.role !== 'admin') {
+    redirect('/')
+  }
+
+  return <div className='flex'> <AdminNavbar></AdminNavbar>{children}</div>
 }
-export default Page

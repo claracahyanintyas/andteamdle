@@ -9,6 +9,7 @@ export default function AdminNavbar() {
                     <Link href='/admin/song' className='py-2 px-4 mx-2 border-2 bg-secondary rounded-sm hover:text-accent'>Songs</Link>
                     <Link href='/admin/artist' className='py-2 px-4 mx-2 border-2 bg-secondary rounded-sm hover:text-accent'>Artists</Link>
                     <Link href='/admin/album' className='py-2 px-4 mx-2 border-2 bg-secondary rounded-sm hover:text-accent'>Albums</Link>
+                    <Link href='/admin/users' className='py-2 px-4 mx-2 border-2 bg-secondary rounded-sm hover:text-accent'>Users</Link>
                 </nav>
             </div>
         </div>
