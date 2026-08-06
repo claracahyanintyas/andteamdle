@@ -1,24 +1,25 @@
-import Image from "next/image";
 import Navbar from "@/app/components/Navbar"
+import { getOrCreateTodaysSession, getSongsForGroup, getSessionAttempts } from '@/app/actions/game'
+import GuessForm from "./components/GuessForm";
 
-export default function Home() {
+export default async function Home() {
+  const { success, error, session } = await getOrCreateTodaysSession()
+
+  if (!success || !session) {
+    return <div>Error loading today&apos;s puzzle: {error}</div>
+  }
+
+  const [{ songs }, { guesses }] = await Promise.all([
+    getSongsForGroup(), // defaults to &TEAM
+    getSessionAttempts(session.id),
+  ])
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center font-sans">
+    <div className=" flex flex-col flex-1 items-center justify-center font-sans">
       <Navbar></Navbar>
-    <div className='mx-auto'>
-        <table className='table-auto align-middle mx-auto border-separate border'>
-          <thead>
-            <tr className='justify-items-center text-center bg-primary'>
-                <th className='p-4'>Album</th>
-                <th className='p-4'>Song Title</th>
-                <th className='p-4'>Official MV</th>
-                <th className='p-4'>Release Date</th>
-                <th className='p-4'>Song Starter</th>
-                <th className='p-4'>Language</th>
-            </tr>
-            </thead>
-        </table>
-    </div>
+      <div className='mx-auto'>
+        <GuessForm sessionId={session.id} songs={songs} initialGuesses={guesses} isCompleted={session.is_completed} />
+      </div>
     </div>
   );
 }
