@@ -68,7 +68,7 @@ export default function GuessForm({
   }
 
   return (
-    <div className="mx-auto my-4">
+    <div className="mx-auto my-4 overflow-x-auto sm:text-sm">
       {!completed && (
         <div className="flex gap-2 mb-4">
           <input
@@ -95,7 +95,7 @@ export default function GuessForm({
 
       {error && <p className="text-red-600 mb-2">{error}</p>}
 
-      <table className="table-auto align-middle mx-auto border-separate border">
+      <table className="table-auto align-middle mx-auto border-separate border min-w-[300px] m-2">
         <thead>
           <tr className="justify-items-center text-center bg-primary">
             <th className="p-4">Album</th>

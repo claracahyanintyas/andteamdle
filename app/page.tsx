@@ -15,7 +15,7 @@ export default async function Home() {
   ])
 
   return (
-    <div className="flex flex-col flex-1 items-center justify-center font-sans">
+    <div className=" flex flex-col flex-1 items-center justify-center font-sans">
       <Navbar></Navbar>
       <div className='mx-auto'>
         <GuessForm sessionId={session.id} songs={songs} initialGuesses={guesses} isCompleted={session.is_completed} />
