@@ -4,7 +4,7 @@ import AuthButton from '@/app/components/AuthButton'
 
 export default function Navbar() {
   return (
-    <div className='w-screen bg-primary text-xl top-0 sticky z-0'>
+    <div className='w-screen bg-primary text-xl top-0 sticky'>
       <div className='overflow-x-auto'>
         <nav className='flex items-center justify-between p-2'>
           <div>
