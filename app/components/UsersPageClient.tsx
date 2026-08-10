@@ -19,6 +19,7 @@ export default function UsersPageClient({ initialProfiles }: UsersPageClientProp
     const result = await updateProfileRole(id, role)
     setUpdatingId(null)
 
+    
     if (!result.success) {
       alert(result.error ?? 'Failed to update role')
       return
