@@ -3,7 +3,7 @@
 import { createClient } from '@/app/utils/supabase/server'
 import type { GuessResult } from '@/app/type/game'
 
-export async function getOrCreateTodaysSession() {
+export async function getOrCreateTodaysSession(localDate: string) {
   const supabase = await createClient()
 
   let {
@@ -21,7 +21,7 @@ export async function getOrCreateTodaysSession() {
     user = data.user
   }
 
-  const today = new Date().toISOString().split('T')[0] // 'YYYY-MM-DD'
+  const today = localDate // e.g. '2026-08-10', computed on the client from their local clock
 
   // get or create today's global answer (defaults to &TEAM inside the SQL function)
   const { data: songId, error: puzzleError } = await supabase.rpc(
