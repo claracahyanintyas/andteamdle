@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { submitGuess } from '@/app/actions/game'
 import type { GuessResult, AnswerStatus } from '@/app/type/game'
+import EndGameModal from './EndGameModal'
 
 interface Song {
   id: number
@@ -37,6 +38,7 @@ export default function GuessForm({
   // history comes back oldest-first from the DB; show newest guess at the top
   const [guesses, setGuesses] = useState<GuessResult[]>([...initialGuesses].reverse())
   const [completed, setCompleted] = useState(isCompleted)
+  const [showModal, setShowModal] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -65,6 +67,10 @@ export default function GuessForm({
     setGuesses((prev) => [result, ...prev])
     setCompleted(result.is_completed)
     setInputValue('')
+
+    if (result.is_completed) {
+      setShowModal(true)
+    }
   }
 
   return (
@@ -133,9 +139,23 @@ export default function GuessForm({
       </div>
 
       {completed && (
-        <p className="mt-4 text-center font-bold">
-          {guesses[0]?.is_correct ? "You got it!" : 'Out of attempts — better luck tomorrow!'}
-        </p>
+        <div className="mt-4 text-center">
+          <button
+            onClick={() => setShowModal(true)}
+            className="px-4 py-2 bg-primary rounded-sm font-bold"
+          >
+            View result
+          </button>
+        </div>
+      )}
+
+      {showModal && (
+        <EndGameModal
+          sessionId={sessionId}
+          isCorrect={guesses[0]?.is_correct ?? false}
+          attemptsUsed={guesses.length}
+          onClose={() => setShowModal(false)}
+        />
       )}
     </div>
   )
