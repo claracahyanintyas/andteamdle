@@ -68,7 +68,7 @@ export default function GuessForm({
   }
 
   return (
-    <div className="mx-auto my-4 overflow-x-auto sm:text-sm">
+    <div className="mx-auto my-4 w-full max-w-2xl px-2">
       {!completed && (
         <div className="flex gap-2 mb-4">
           <input
@@ -76,7 +76,7 @@ export default function GuessForm({
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Type a song title..."
-            className="bg-accent rounded-sm text-primary p-2 flex-1"
+            className="bg-accent rounded-sm text-primary p-2 flex-1 min-w-0 text-sm sm:text-base"
           />
           <datalist id="song-options">
             {songs.map((song) => (
@@ -86,61 +86,51 @@ export default function GuessForm({
           <button
             onClick={handleGuess}
             disabled={isSubmitting || !inputValue}
-            className="px-4 py-2 bg-primary rounded-sm"
+            className="px-3 sm:px-4 py-2 bg-primary rounded-sm shrink-0 text-sm sm:text-base"
           >
             {isSubmitting ? 'Guessing...' : 'Guess'}
           </button>
         </div>
       )}
 
-      {error && <p className="text-red-600 mb-2">{error}</p>}
+      {error && <p className="text-red-600 mb-2 text-sm">{error}</p>}
 
-      <table className="table-auto align-middle mx-auto border-separate border min-w-[300px] m-2">
-        <thead>
-          <tr className="justify-items-center text-center bg-primary">
-            <th className="p-4">Album</th>
-            <th className="p-4">Song Title</th>
-            <th className="p-4">Official MV</th>
-            <th className="p-4">Release Date</th>
-            {/* <th className="p-4">Song Starter</th> */}
-            <th className="p-4">Language</th>
-          </tr>
-        </thead>
-        <tbody>
-          {guesses.map((g, i) => (
-            <tr key={i} className="text-center">
-              <td className={`p-4 ${statusColor(g.album_status)}`}>
-                {g.guessed_album_picture && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={g.guessed_album_picture}
-                    alt={g.guessed_album}
-                    className="w-12 h-12 object-cover mx-auto mb-1 rounded"
-                  />
-                )}
-                {g.guessed_album}
-              </td>
-              <td className={`p-4 ${statusColor(g.title_status)}`}>{g.guessed_title}</td>
-              <td className={`p-4 ${statusColor(g.mv_status)}`}>{g.guessed_has_mv ? 'Yes' : 'No'}</td>
-              <td className={`p-4 ${statusColor(g.song_date_status)}`}>
-                {g.guessed_release_date}{dateArrow(g.song_date_status)}
-              </td>
-              {/* <td className={`p-4 ${statusColor(g.starter_status)}`}>
-                {g.guessed_starter_picture && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={g.guessed_starter_picture}
-                    alt={g.guessed_starter}
-                    className="w-12 h-12 object-cover mx-auto mb-1 rounded-full"
-                  />
-                )}
-                {g.guessed_starter}
-              </td> */}
-              <td className={`p-4 ${statusColor(g.language_status)}`}>{g.guessed_language}</td>
+      <div className="overflow-x-auto">
+        <table className="table-auto align-middle mx-auto border-separate border text-xs sm:text-base w-full">
+          <thead>
+            <tr className="justify-items-center text-center bg-primary">
+              <th className="p-1 sm:p-4">Album</th>
+              <th className="p-1 sm:p-4">Song Title</th>
+              <th className="p-1 sm:p-4">Official MV</th>
+              <th className="p-1 sm:p-4">Release Date</th>
+              <th className="p-1 sm:p-4">Language</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {guesses.map((g, i) => (
+              <tr key={i} className="text-center">
+                <td className={`p-1 sm:p-4 ${statusColor(g.album_status)}`}>
+                  {g.guessed_album_picture && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={g.guessed_album_picture}
+                      alt={g.guessed_album}
+                      className="w-8 h-8 sm:w-12 sm:h-12 object-cover mx-auto mb-1 rounded"
+                    />
+                  )}
+                  {g.guessed_album}
+                </td>
+                <td className={`p-1 sm:p-4 ${statusColor(g.title_status)}`}>{g.guessed_title}</td>
+                <td className={`p-1 sm:p-4 ${statusColor(g.mv_status)}`}>{g.guessed_has_mv ? 'Yes' : 'No'}</td>
+                <td className={`p-1 sm:p-4 ${statusColor(g.song_date_status)}`}>
+                  {g.guessed_release_date}{dateArrow(g.song_date_status)}
+                </td>
+                <td className={`p-1 sm:p-4 ${statusColor(g.language_status)}`}>{g.guessed_language}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {completed && (
         <p className="mt-4 text-center font-bold">
