@@ -17,8 +17,8 @@ function statusColor(status: AnswerStatus) {
 }
 
 function dateArrow(status: AnswerStatus) {
-  if (status === 'higher') return ' ↑' // guessed song is later than the answer
-  if (status === 'lower') return ' ↓' // guessed song is earlier than the answer
+  if (status === 'higher') return ' ↓' // guessed song is later than the answer
+  if (status === 'lower') return ' ↑' // guessed song is earlier than the answer
   return ''
 }
 
