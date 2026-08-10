@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/app/utils/supabase/server'
-import type { GuessResult } from '@/app/type/game'
+import type { GuessResult, AnswerReveal } from '@/app/type/game'
 
 export async function getOrCreateTodaysSession(localDate: string) {
   const supabase = await createClient()
@@ -134,4 +134,19 @@ export async function submitGuess(sessionId: string, guessedSongId: number) {
     error: null,
     result: (data?.[0] ?? null) as (GuessResult & { attempts_used: number; is_completed: boolean }) | null,
   }
+}
+
+export async function getAnswerReveal(sessionId: string) {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase.rpc('reveal_answer', {
+    p_session_id: sessionId,
+  })
+
+  if (error) {
+    console.error('REVEAL ANSWER ERROR:', error)
+    return { success: false, error: error.message, answer: null as AnswerReveal | null }
+  }
+
+  return { success: true, error: null, answer: (data?.[0] ?? null) as AnswerReveal | null }
 }

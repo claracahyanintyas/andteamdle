@@ -17,3 +17,13 @@ export interface GuessResult {
   guessed_language: string
   is_correct: boolean
 }
+
+export interface AnswerReveal {
+  song_title: string
+  album_title: string
+  album_picture: string | null
+  release_date: string
+  starter_name: string
+  starter_picture: string | null
+  language: string
+}
