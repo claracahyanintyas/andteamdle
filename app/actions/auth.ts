@@ -1,5 +1,6 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { createClient } from '@/app/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import type { Profile } from '@/app/type/profile'
@@ -66,4 +67,33 @@ export async function getCurrentProfile() {
   if (error) return { success: false, profile: null as Profile | null }
 
   return { success: true, profile: data as Profile }
+
+  
+}
+
+// ---------- REQUEST PASSWORD RESET ----------
+export async function requestPasswordReset(email: string) {
+  const supabase = await createClient()
+  const origin = (await headers()).get('origin')
+
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${origin}/auth/callback?next=/auth/update-password`,
+  })
+
+  if (error) return { success: false, error: error.message }
+  return { success: true }
+}
+
+// ---------- UPDATE PASSWORD (user arrives with a recovery session) ----------
+export async function updatePassword(newPassword: string) {
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { success: false, error: 'Reset link is invalid or has expired' }
+
+  const { error } = await supabase.auth.updateUser({ password: newPassword })
+
+  if (error) return { success: false, error: error.message }
+
+  return { success: true }
 }
