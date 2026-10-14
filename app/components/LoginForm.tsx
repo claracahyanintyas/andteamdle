@@ -63,6 +63,10 @@ export default function LoginForm() {
         <a href="/auth/register" className="text-sm underline">
           Don't have an account? Register
         </a>
+
+        <a href="/auth/forgot-password" className="text-sm underline">
+          Forgot your password? Reset password here
+        </a>
       </form>
     </div>
   )
